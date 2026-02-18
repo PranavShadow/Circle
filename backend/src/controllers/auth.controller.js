@@ -6,10 +6,8 @@ import { generateToken } from "../lib/utils.js";
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
   try {
-    if(!fullName || !email || !password){
-      return res
-        .status(400)
-        .json({ message: "Missing details" });
+    if (!fullName || !email || !password) {
+      return res.status(400).json({ message: "Missing details" });
     }
     if (password.length < 8) {
       return res
@@ -44,14 +42,42 @@ export const signup = async (req, res) => {
     }
   } catch (e) {
     console.log("Error in signup controller", e.message);
-    res.status(500).json({message: "Internal Server Error"})
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-export const login = (req, res) => {
-  res.send("login route");
+export const login = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid Credentials" });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "Invalid Credentials" });
+    }
+
+    generateToken(user._id, res);
+    res.status(200).json({
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      profilePic: user.profilePic,
+    });
+  } catch (e) {
+    console.log("Error in Login Controller", e.message);
+    res.status(500).json({message: "Internal Server Error"});
+  }
 };
 
 export const logout = (req, res) => {
-  res.send("logout route");
+  try {
+    res.cookie("jwt-token", "", {maxAge:0})
+    res.status(200).json({message: "Logout Successfully"})
+  } catch (e) {
+    console.log("Error in Logout Controller", e.message);
+    res.status(500).json({message: "Internal Server Error"});
+  }
 };
