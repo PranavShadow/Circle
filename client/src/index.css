@@ -3,7 +3,6 @@
 
 * {
   font-family: "Outfit", sans-serif;
-  color: white;
 }
 
 body {
@@ -14,4 +13,9 @@ body {
   );
   background-size: cover;
   background-position: center;
+  color: white;
+}
+
+h1{
+    color:white
 }
