@@ -1,0 +1,10 @@
+# Ignore node_modules everywhere
+node_modules/
+
+# Ignore environment files/folders
+.env
+.env.*
+env/
+
+# Ignore assets folder
+assets/
